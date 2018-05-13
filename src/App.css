@@ -1,9 +1,16 @@
-.App {
- 
+body{
+  background: #444;
+  height: 500px;
+
+}
+
+.header {
   text-align: center;
   background: #f5f5f5;
-  width: 100%;
-  height: 100%;
+  padding: 10px;
+  margin: 10px;
+  width: 95%;
+  height: 20px;
 }
 
 .App-logo {
@@ -31,10 +38,55 @@
   to { transform: rotate(360deg); }
 }
 
-.container {
-  max-width: 1024px;
-  color: #333;
-  margin: 20px;
+.container{
+  width: 80%;
   padding: 20px;
-  border: 2px solid black;
+  margin: 20px;
+  text-align: center;
+}
+
+.button {
+  background-color: #9b9b9b;
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  float: left;
+}
+.button-right {
+  background-color: #9b9b9b;
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  float: right;
+}
+
+.table-style{
+ 
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+  text-align: left;
+  padding-top: 100px;
+}
+
+.td-style{
+  padding: 10px;
+}
+
+.text {
+  width: 60%;
+  margin: 10px;
+  padding: 10px;
 }
