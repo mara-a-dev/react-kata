@@ -1,12 +1,14 @@
 {
-  "name": "hello-world",
+  "name": "react-kata",
   "version": "0.1.0",
   "main": "connection.js",
   "private": true,
   "dependencies": {
     "axios": "^0.18.0",
+    "body-parser": "^1.18.2",
     "cors": "^2.8.4",
     "express": "^4.16.3",
+    "morgan": "^1.9.0",
     "mysql": "github:mysqljs/mysql",
     "react": "^16.3.2",
     "react-dom": "^16.3.2",
@@ -20,5 +22,6 @@
   },
   "devDependencies": {
     "nodemon": "^1.17.4"
-  }
+  },
+  "proxy": "http://localhost:4000"
 }

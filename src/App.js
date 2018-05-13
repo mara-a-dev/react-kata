@@ -1,28 +1,38 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import axios from 'axios';
 
 class App extends Component {
-	
-	componentDidMount() {
-		var desc = {this.text};
-		console.log(desc);
-    	axios.get('https://jsonplaceholder.typicode.com/users')
-    	.then(res => {
-    		console.log(res);
-    		this.setState({persons : res.data});
-    	});
+	constructer(){
+		
+	}
+
+	componentDidMount(){
+		console.log("mounted!");
+	}
+
+	handleSubmit (event) {
+  		event.preventDefault();
+  		var desc = (event.textIn.value);
+  		console.log(desc); 
+
+  		var request = new Request("http://localhost:4000/api/new",{
+  			method: 'POST',
+  			headers: {
+		    'Accept': 'application/json',
+		    'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+			    data: desc
+			})
+  		});
+
+  		fetch(request).then((response) => response.json()).then((desc) => {console.log(desc);
+  			
+  		})
   	}
 
 	listAlarms(){
-		axios.get('https://jsonplaceholder.typicode.com/users')
-		 .then(function (response) {
-		    console.log(response);
-		  })
-		  .catch(function (error) {
-		    console.log(error);
-		  });
 	}
 
 	reportAlarms(){
@@ -37,13 +47,13 @@ class App extends Component {
 	          		<img src={logo} className="App-logo" alt="logo" />
 	          		<h2>Alarm System App in React</h2>
 	        	</div>
-	        <p className="App-intro">
+	        <div className="App-intro">
 
 		      	<div className ="container">
 
 		      		<div>
-		      			<div><input type="text" refs = "text" placeholder="Enter Description" className="text"></input>
-				    	<button className="button-right" onClick={ this.componentDidMount }>Create Alarm</button>
+		      			<div><input type="text" placeholder="Enter Description" className="text" ref={(textIn) => { this.textIn = textIn }}></input>
+				    	<button className="button-right" onClick={ this.handleSubmit }>Create Alarm</button>
 			      		</div>
 				    	<button className="button-right" onClick={ this.listAlarms }>List Alarms</button>
 				      	<button className="button-right" onClick={ this.reportAlarms }>Report</button>
@@ -52,6 +62,7 @@ class App extends Component {
 			      		<div>List of alarm devices in the database:</div>
 			      		<div>
 			      		<table>
+			      		<tbody>
 			      		<tr>
 			      		<td className="td-style">ID</td>
 			      		<td className="td-style">Name</td>
@@ -77,11 +88,12 @@ class App extends Component {
 			      		<td className="button">alarm</td>
 			      		</tr>
 			      		<tr></tr>
+			      		</tbody>
 			      		</table>
 			      		</div>
 			      	</div>
 		      	</div>
-	        </p>
+	        </div>
 	      </div>
 
 	    );
