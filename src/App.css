@@ -1,7 +1,9 @@
+@import url('https://fonts.googleapis.com/css?family=Montserrat');
+
 body{
   background: #444;
   height: 500px;
-
+  font-family: 'Montserrat', sans-serif;
 }
 
 .header {
@@ -39,8 +41,8 @@ body{
 }
 
 .container{
-  width: 80%;
-  padding: 20px;
+  padding-left: 10%;
+  padding-right: 10%;
   margin: 20px;
   text-align: center;
 }
@@ -58,7 +60,24 @@ body{
   cursor: pointer;
   float: left;
 }
-.button-right {
+.add-button {
+  background-color: #9b9b9b;
+  border: none;
+  color: white;
+  padding: 15px 3px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 10px;
+  cursor: pointer;
+  width:15%;
+  font-family: 'Montserrat', sans-serif;
+}
+.inner-cont{
+  width: 100%;
+}
+.list-button{
   background-color: #9b9b9b;
   border: none;
   color: white;
@@ -67,18 +86,32 @@ body{
   text-decoration: none;
   display: inline-block;
   font-size: 16px;
-  margin: 4px 2px;
+  margin: 10px;
   cursor: pointer;
-  float: right;
+  width:30%;
+  font-family: 'Montserrat', sans-serif;
 }
 
+.report-button{
+  background-color: #9b9b9b;
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 10px;
+  cursor: pointer;
+  width:30%;
+  font-family: 'Montserrat', sans-serif;
+}
 .table-style{
- 
-  width: 100%;
-  height: 100%;
-  padding: 10px;
+  background: #fff;
+  height: 400px;
+  padding: 30px;
   text-align: left;
-  padding-top: 100px;
+  margin: 5%;
 }
 
 .td-style{
@@ -89,4 +122,6 @@ body{
   width: 60%;
   margin: 10px;
   padding: 10px;
+  border-radius: 5px;
+  font-family: 'Montserrat', sans-serif;
 }

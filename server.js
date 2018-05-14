@@ -1,10 +1,8 @@
 var mysql = require('mysql');
 var express = require('express');
 var bodyParser = require('body-parser');
-var morgan = require('morgan');
 const app = express();
-const PORT = 4000;
-
+const port = process.env.PORT || 3001;
 
 var con = mysql.createConnection({
   user: "admin",
@@ -15,6 +13,24 @@ var con = mysql.createConnection({
   max: 10
 });
 
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+
+var router = express.Router();
+
+
+router.use(function(req, res, next) {
+    // do logging
+    console.log('Something is happening.');
+    next(); // make sure we go to the next routes and don't stop here
+});
+
+router.get('/', function(request, response) {
+    response.json({ message: 'hooray! welcome to our api!' });   
+});
+
+app.use('/api', router);
 
 app.post('/api/new',function(request,response){
 	console.log(request.body);
@@ -23,7 +39,7 @@ app.post('/api/new',function(request,response){
 	con.connect(function(err) {
 		if (err)
 	  	{
-	  		return console.log(err);
+	  		return response.status(400).send(err);
 	  	}
 	  	else{
 
@@ -31,10 +47,37 @@ app.post('/api/new',function(request,response){
 	  		con.query(sql, function (err, result) {
 			    if (err) 
 		    	{
-		    		return console.log(err);
+		    		return response.status(400).send(err);
 		    	}
 		    	else{
-		    		console.log(result);
+		    		return response.status(200).send(result);
+		    		con.end();
+		    	}
+	  		});
+		}
+	});
+})
+
+
+
+/*
+app.get('http://localhost:3000/api/list',function(request,response){
+	
+	con.connect(function(err) {
+		if (err)
+	  	{
+	  		return response.status(400).send(err);
+	  	}
+	  	else{
+
+		  	var sql = "SELECT * FROM alarm_device";
+	  		con.query(sql, function (err, result) {
+			    if (err) 
+		    	{
+		    		return response.status(400).send(err);
+		    	}
+		    	else{
+		    		return response.status(200).send(result);
 		    		//con.end();
 		    	}
 	  		});
@@ -42,22 +85,36 @@ app.post('/api/new',function(request,response){
 	});
 })
 
-/*
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended:true }));
+app.get('/api/report',function(request,response){
+	
+	con.connect(function(err) {
+		if (err)
+	  	{
+	  		return response.status(400).send(err);
+	  	}
+	  	else{
 
-
-app.use(morgan('dev'));
-
-app.use(function(require,response, next){ //request from react client site, all the way back to postgres and epress api
+		  	var sql = "SELECT * FROM alarm_log ORDER BY created_date DESC";
+	  		con.query(sql, function (err, result) {
+			    if (err) 
+		    	{
+		    		return response.status(400).send(err);
+		    	}
+		    	else{
+		    		return response.status(200).send(result);
+		    		//con.end();
+		    	}
+	  		});
+		}
+	});
+})
+*/
+app.use(function(require,response, next){ //request from react client site, all the way back to epress api
 	response.header("Access-control-Allow-Origin", "*");
 	response.header("Access-control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 	next();
 });
 
-*/
 
 
-
-
-app.listen(PORT, () => console.log("listening to port "+PORT));
+app.listen(port, () => console.log("listening to port "+port));

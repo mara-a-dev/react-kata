@@ -13,26 +13,56 @@ class App extends Component {
 
 	handleSubmit (event) {
   		event.preventDefault();
-  		var desc = (event.textIn.value);
-  		console.log(desc); 
+  		
+	    let data = {
+	    	description : "hello"
+	    };
 
-  		var request = new Request("http://localhost:4000/api/new",{
+  		var request = new Request('http://localhost:3001/api/new',{
   			method: 'POST',
-  			headers: {
+  			headers: new Headers ({
 		    'Accept': 'application/json',
 		    'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-			    data: desc
-			})
+			}),
+			mode: 'no-cors',
+			cache: true,
+			body: JSON.stringify(data)
   		});
 
-  		fetch(request).then((response) => response.json()).then((desc) => {console.log(desc);
-  			
+  		fetch(request).then(function(response){
+
+  			if (response.ok) {
+			  console.log("ok res")
+			} else if (response.status === 401) {
+			  response.json().then(function(data){
+  				console.log(data)
+  			})
+			} else {
+			  console.log(" No JSON expected or available for these error codes.")
+			}
+  		}).catch(function(response){
+  			console.log("do");
   		})
-  	}
+  		
+    }
+ 
 
 	listAlarms(){
+
+		 var myVar = {"id" : 1};
+		    console.log("tuleb siia");
+		    fetch("http://localhost:3001/api/list", {
+		        method: "POST",
+		        headers: {
+		            "Content-Type": "text/plain"
+		        },
+		        body: JSON.stringify(myVar)
+		    }).then(function(response) {
+		        return response.text();
+		    }).then(function(muutuja){
+		       // document.getElementById('väljund').innerHTML = muutuja;
+		    });
+		
 	}
 
 	reportAlarms(){
@@ -52,44 +82,46 @@ class App extends Component {
 		      	<div className ="container">
 
 		      		<div>
-		      			<div><input type="text" placeholder="Enter Description" className="text" ref={(textIn) => { this.textIn = textIn }}></input>
-				    	<button className="button-right" onClick={ this.handleSubmit }>Create Alarm</button>
-			      		</div>
-				    	<button className="button-right" onClick={ this.listAlarms }>List Alarms</button>
-				      	<button className="button-right" onClick={ this.reportAlarms }>Report</button>
+		      			<input type="text" ref="text_input" placeholder="Enter Description" className="text"></input>
+				    	<button className="add-button" onClick={ this.handleSubmit }>Add Alarm</button>	
+			      	</div>
+
+			      	<div className="inner-cont">
+			      		<button className="list-button" onClick={ this.listAlarms }>List Alarms</button>
+			      		<button className="report-button" onClick={ this.reportAlarms }>Report</button>
 			      	</div>
 			      	<div className="table-style">
-			      		<div>List of alarm devices in the database:</div>
+			      		<h2>List of alarm devices in the database:</h2>
 			      		<div>
-			      		<table>
-			      		<tbody>
-			      		<tr>
-			      		<td className="td-style">ID</td>
-			      		<td className="td-style">Name</td>
-			      		<td className="td-style">Description</td>
-			      		</tr>
-			      		<tr>
-			      		<td className="td-style">1</td>
-			      		<td className="td-style">Alarm_1</td>
-			      		<td className="td-style">Desc of alarm 1</td>
-			      		<td className="button">alarm</td>
-			      		</tr>
+				      		<table>
+					      		<tbody>
+					      		<tr>
+					      		<td className="td-style">ID</td>
+					      		<td className="td-style">Name</td>
+					      		<td className="td-style">Description</td>
+					      		</tr>
+					      		<tr>
+					      		<td className="td-style">1</td>
+					      		<td className="td-style">Alarm_1</td>
+					      		<td className="td-style">Desc of alarm 1</td>
+					      		<td className="button">alarm</td>
+					      		</tr>
 
-			      		<tr>
-			      		<td className="td-style">2</td>
-			      		<td className="td-style">Alarm_2</td>
-			      		<td className="td-style">Desc of alarm 2</td>
-			      		<td className="button">alarm</td>
-			      		</tr>
-			      		<tr>
-			      		<td className="td-style">3</td>
-			      		<td className="td-style">Alarm_3</td>
-			      		<td className="td-style">Desc of alarm 3</td>
-			      		<td className="button">alarm</td>
-			      		</tr>
-			      		<tr></tr>
-			      		</tbody>
-			      		</table>
+					      		<tr>
+					      		<td className="td-style">2</td>
+					      		<td className="td-style">Alarm_2</td>
+					      		<td className="td-style">Desc of alarm 2</td>
+					      		<td className="button">alarm</td>
+					      		</tr>
+					      		<tr>
+					      		<td className="td-style">3</td>
+					      		<td className="td-style">Alarm_3</td>
+					      		<td className="td-style">Desc of alarm 3</td>
+					      		<td className="button">alarm</td>
+					      		</tr>
+					      		<tr></tr>
+					      		</tbody>
+				      		</table>
 			      		</div>
 			      	</div>
 		      	</div>
