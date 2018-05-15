@@ -20,97 +20,68 @@ app.use(bodyParser.json());
 var router = express.Router();
 
 
-router.use(function(req, res, next) {
+router.use(function(request, response, next) {
     // do logging
     console.log('Something is happening.');
     next(); // make sure we go to the next routes and don't stop here
 });
-
+/*
 router.get('/', function(request, response) {
     response.json({ message: 'hooray! welcome to our api!' });   
 });
-
+*/
 app.use('/api', router);
 
-app.post('/api/new',function(request,response){
-	console.log(request.body);
-	var description = request.body.desc;
 
-	con.connect(function(err) {
-		if (err)
-	  	{
-	  		return response.status(400).send(err);
-	  	}
-	  	else{
-
-		  	var sql = "INSERT INTO alarm_device (description) VALUES ('" + description + "')";
-	  		con.query(sql, function (err, result) {
-			    if (err) 
-		    	{
-		    		return response.status(400).send(err);
-		    	}
-		    	else{
-		    		return response.status(200).send(result);
-		    		con.end();
-		    	}
-	  		});
-		}
+app.post('/api/add',function(request,response){
+	var description = request.body.description;
+	var sql = "INSERT INTO alarm_device (description) VALUES ('" + description + "')";
+		con.query(sql, function (err, result) {
+	    if (err) 
+    	{
+    		return response.status(400).send(err);
+    	}
+    	else{
+    		return response.status(200).send(result);
+    		
+    	}
 	});
-})
-
-
-
-/*
-app.get('http://localhost:3000/api/list',function(request,response){
 	
-	con.connect(function(err) {
-		if (err)
-	  	{
-	  		return response.status(400).send(err);
-	  	}
-	  	else{
+});
+			
 
-		  	var sql = "SELECT * FROM alarm_device";
-	  		con.query(sql, function (err, result) {
-			    if (err) 
-		    	{
-		    		return response.status(400).send(err);
-		    	}
-		    	else{
-		    		return response.status(200).send(result);
-		    		//con.end();
-		    	}
-	  		});
-		}
+
+app.get('/api/list',function(request,response){
+  	var sql = "SELECT * FROM alarm_device";
+		con.query(sql, function (err, result) {
+	    if (err) 
+    	{
+    		return response.status(400).send(err);
+    	}
+    	else{
+    		return response.status(200).send(result);
+    	}
 	});
-})
+});
+
 
 app.get('/api/report',function(request,response){
 	
-	con.connect(function(err) {
-		if (err)
-	  	{
-	  		return response.status(400).send(err);
-	  	}
-	  	else{
-
-		  	var sql = "SELECT * FROM alarm_log ORDER BY created_date DESC";
-	  		con.query(sql, function (err, result) {
-			    if (err) 
-		    	{
-		    		return response.status(400).send(err);
-		    	}
-		    	else{
-		    		return response.status(200).send(result);
-		    		//con.end();
-		    	}
-	  		});
-		}
+  	var sql = "SELECT * FROM alarm_log ORDER BY created_date DESC";
+		con.query(sql, function (err, result) {
+	    if (err) 
+    	{
+    		return response.status(400).send(err);
+    	}
+    	else{
+    		return response.status(200).send(result);
+    	}
 	});
 })
-*/
-app.use(function(require,response, next){ //request from react client site, all the way back to epress api
+
+app.use(function(request,response, next){ //request from react client site, all the way back to epress api
 	response.header("Access-control-Allow-Origin", "*");
+	response.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
 	response.header("Access-control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 	next();
 });
