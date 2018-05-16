@@ -5,7 +5,7 @@ Alarm system full stack application created using ReactJs + NodeJs + MySql + HTM
 Below you will find some information about it :
 
 
-Database being used : PHPmyadmin (mysql)
+Database being used : PHPmyadmin (mysql) <br>
 Server : Localhost 
 Client port : 3000
 Server port : 3001
