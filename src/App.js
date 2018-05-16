@@ -3,155 +3,191 @@ import logo from './logo.svg';
 import './App.css';
 
 class App extends Component {
+
 	constructor(){
 		super();
 		this.state = {
 			desc : '',
 			boxes: [],
-			counter: 0
-			
+			alarms: [],
+			reports: [],
+			searchResult: [],
+			counter: 0,
+			list_page : false,
+			report_page : false
 		};
 	}
 
 	handleChange (event) {
 	    this.setState({ desc: event.target.value});
-	    
-	  }
+	}
 
 	handleSubmit (event) {
+
   		event.preventDefault();
-  		let counter = this.state.counter;
+  		if(this.refs.text_input.value === "")
+  			alert("Please enter description to your new alarm");
+  		else{
 
-	    let box = {
-	    	description : this.refs.text_input.value,
-	    	counter
-	    };
+  			let counter = this.state.counter;
+		    let box = {
+		    	description : this.refs.text_input.value,
+		    	counter
+		    };
+		    counter +=1;
+		    let boxes = this.state.boxes;
 
-	    counter +=1;
+		    boxes.push(box);
+		    this.setState({
+		    	boxes: boxes,
+		    	counter:counter
+		    })
 
-	    let boxes = this.state.boxes;
+	  		var request = new Request('http://localhost:3001/api/add',{
+	  			method: 'POST',
+	  			headers: new Headers({'content-type': 'application/x-www-form-urlencoded'}),
+				mode:"cors",
+				cache: true,
+				body: JSON.stringify(box)
+	  		});
 
-	    boxes.push(box);
-	    this.setState({
-	    	boxes: boxes,
-	    	counter:counter
-	    })
-
-  		var request = new Request('http://localhost:3001/api/add',{
-  			method: 'POST',
-  			headers: new Headers({'content-type': 'application/x-www-form-urlencoded'}),
-			mode:"cors",
-			cache: true,
-			body: JSON.stringify(box)
-  		});
-
-		fetch(request).then(function(response){
-		   if (!response.ok) {
-		   		return response.text().then(result => Promise.reject(new Error(result)))
-			}
-			
-		    console.log(JSON.parse(response.json()));
-			
-	    })
-	    
-		.catch(function (err) {
-		    console.log("errorzzz")
-		});
+			fetch(request).then(function(response){
+			   if (!response.ok) {
+			   		return response.text().then(result => Promise.reject(new Error(result)))
+				}
+			    console.log(JSON.parse(response.json()));
+	    	}).catch(function (error) {
+			    console.log(error)
+			});
 	  	
+  		}
   		
    }
  
 
-	listAlarms(event){
+	listAlarms(){
 
-		//let alarms = this.state.alarms;
-	    fetch("http://localhost:3001/api/list")
-	    .then(function (response) {
+		this.setState({
+			report_page: false,
+			list_page: true
+		})
+
+		fetch("http://localhost:3001/api/list")
+	    .then((response) => {
 		   if (!response.ok) {
-		   		//return response.text().then(result => Promise.reject(new Error(result)))
+		   		 throw Error(response.statusText);
 			}
-			
 
-		    var list =response.json();
-		    var element;
-		    
-		    list.then(function(obj){
-		    	for(element in obj[0])
-		    		console.log(element);
+		        response.json()
+		        .then((alarms) => {	
+		            this.setState({alarms: alarms,}); 
+		        });
 		    })
-
-			
-	    })
-	    
 		.catch(function (err) {
 		    console.log("errorzzz" + err) 
 		});
-	
-	/*   .then(resp => resp.text())
-      .then(data => {
-        console.log(data);
-      })*/
-	}
-
-
-
-	alertAlarms(event){
-	event.preventDefault();
-	var id ={
-		id: 55
-	};
-
-		var request = new Request('http://localhost:3001/api/alert',{
-  			method: 'POST',
-  			headers: new Headers({'content-type': 'application/x-www-form-urlencoded'}),
-			mode:"cors",
-			cache: true,
-			body: JSON.stringify(id)
-  		});
-
-		 fetch(request).then(function(response) {
-		   if (!response.ok) {
-		   		return response.text().then(result => Promise.reject(new Error(result)))
-			}
-			
-			console.log(response.json());
-
-			
-		    })
-			.catch(function (err) {
-			    console.log("errorzzz")
-			});
 		
 	}
 
-
-
 	reportAlarms(){
-
-		 fetch("http://localhost:3001/api/report").then(function(response) {
+		
+		this.setState({
+			report_page: true,
+			list_page: false
+		})
+		 fetch("http://localhost:3001/api/report")
+		 .then((response) => {
 	       
 		   if (!response.ok) {
-		   		//return response.text().then(result => Promise.reject(new Error(result)))
+		   		throw Error(response.statusText);
 			}
 			
-		    console.log(response.json());
-		    
-			
+		    response.json()
+	        .then((reports) => {	
+	            this.setState({reports: reports,}); 
+	        });	    
 	    })
-	    
 		.catch(function (err) {
 		    console.log("errorzzz" + err) 
 		});
+	}
+
+	searchLog (event) {
+
+  		event.preventDefault();
+  		if(this.refs.log_input.value === "")
+  			alert("Please enter number of alarm");
+  		else{
+
+		    let log = {
+		    	id : this.refs.log_input.value,
+		    };
+
+	  		var request = new Request('http://localhost:3001/api/search',{
+	  			method: 'POST',
+	  			headers: new Headers({'content-type': 'application/x-www-form-urlencoded'}),
+				mode:"cors",
+				cache: true,
+				body: JSON.stringify(log)
+	  		});
+
+			fetch(request).then(function(response){
+			   if (!response.ok) {
+		   		throw Error(response.statusText);
+			}
+			
+		    response.json().then((searchResult) => {	
+		            this.setState({searchResult: searchResult,});
+		        });   
+	        	    
+	    }).catch(function (err) {
+		    console.log("errorzzz" + err) 
+		});
+	  	
+  		}
+   }
+
+	alertAlarms(event){
+
+		event.preventDefault();
+		var indx = event.target.id;
+		let id ={
+			id: event.target.id
+		};
+
+		var request = new Request('http://localhost:3001/api/alert',{
+			method: 'POST',
+			headers: new Headers({'content-type': 'application/x-www-form-urlencoded'}),
+			mode:"cors",
+			cache: true,
+			body: JSON.stringify(id)
+			});
+
+	 	fetch(request).then(function(response) {
+		    if (!response.ok) {
+		   		return response.text().then(result => Promise.reject(new Error(result)))
+			}
+			
+			alert("Log has been created for Alarm_"+indx);
+			
+		    })
+			.catch(function (error) {
+			    console.log(error)
+		});	
 	}
 
   	render() {
   		let boxes = this.state.boxes;
+  		let r_page = this.state.report_page ? "block": "none";
+		let l_page = this.state.list_page ? "block": "none";
+  		
+    	
     	return (
     	<div className="App">
-	        	<div className="App-header">
-	          		<img src={logo} className="App-logo" alt="logo" />
-	          		<h2>Alarm System App in React</h2>
-	        	</div>
+        	<div className="App-header">
+          		<img src={logo} className="App-logo" alt="logo" />
+          		<h2>Alarm System App in React</h2>
+        	</div>
 	        <div className="App-intro">
 
 		      	<div className ="container">
@@ -162,56 +198,72 @@ class App extends Component {
 			      	</div>
 
 			      	<div className="inner-cont">
-			      		<button className="list-button" onClick={ this.listAlarms }>List Alarms</button>
+			      		<button className="list-button" onClick={this.listAlarms.bind(this)}>List Alarms</button>
 			      		<button className="report-button" onClick={ this.reportAlarms.bind(this) }>Report</button>
 			      	</div>
-			      	<div className="table-style">
-			      		<ul>
-			      		{boxes.map(box => <li key={box.counter}>{box.description}</li>)}
-			      		</ul>
-			      		<h2>List of alarm devices in the database:</h2>
-			      		<div>
-			      		<pre>
-			      		{JSON.stringify(this.alarms)}
-			      		</pre>
+
+			      	<div>
+				      	<div className="list_container" style={{display: l_page}}>
+				      		
+				      		<h2>List of alarm devices in the database:</h2>
 				      		<table>
+				      		<tbody>
+					      		<tr>
+					      			<td className="td-style"></td>
+						      		<td className="td-style">ID</td>
+						      		<td className="td-style">Name</td>
+						      		<td className="td-style">Description</td>
+					      		</tr>
+					      		{this.state.alarms.map(alarm => 
+					      			<tr key={alarm.ID} >
+					      			<td className="button" id={alarm.ID} onClick={this.alertAlarms}>alarm</td>
+					      			<td className="td-style">{alarm.ID}</td>
+					      			<td className="td-style">Alarm_{alarm.ID}</td>
+					      			<td className="td-style">{alarm.description}</td>
+
+				      			</tr>)}
+				      		</tbody>
+				      		</table>			     
+
+				      	</div>
+				      	
+				      	<div className ="report_container" style={{display: r_page}}>
+				      		<div>
+					      		<input type="text" placeholder="Search by alarm number" className="text" ref="log_input"></input>
+					    		<button className="add-button" onClick={this.searchLog.bind(this)}>Search</button>	
+				      		</div>
+				      		<h2>List of alarm logs in the database:</h2>
+			      			<table>
 					      		<tbody>
-					      		<tr>
-					      		<td className="td-style">ID</td>
-					      		<td className="td-style">Name</td>
-					      		<td className="td-style">Description</td>
-					      		</tr>
-					      		<tr>
-					      		<td className="td-style" ref= "alarm_id" key="alarm_id">1</td>
-					      		<td className="td-style">Alarm_1</td>
-					      		<td className="td-style">Desc of alarm 1</td>
-					      		<td className="button" onClick={ this.alertAlarms.bind(this) }>alarm</td>
-					      		</tr>
+						      		<tr>
+							      		<td className="td-style">ID</td>
+							      		<td className="td-style">Date</td>
+							      		<td className="td-style">Alarm Device</td>
+						      		</tr>
+						      		{this.state.reports.map(log => 
+						      			<tr key={log.ID} >
+						      			<td className="td-style">{log.ID}</td>
+						      			<td className="td-style">{log.created_date}</td>
+						      			<td className="td-style">Alarm_{log.alarm_device_id}</td>
 
-					      		<tr>
-					      		<td className="td-style" ref= "alarm_id" >2</td>
-					      		<td className="td-style">Alarm_2</td>
-					      		<td className="td-style">Desc of alarm 2</td>
-					      		<td className="button" onClick={ this.alertAlarms.bind(this) }>alarm</td>
-					      		</tr>
-					      		<tr>
-					      		<td className="td-style" ref= "alarm_id">3</td>
-					      		<td className="td-style">Alarm_3</td>
-					      		<td className="td-style">Desc of alarm 3</td>
-					      		<td className="button" onClick={ this.alertAlarms.bind(this) }>alarm</td>
-					      		</tr>
-					      		<tr></tr>
+					      			</tr>)}
+
+					      			{this.state.searchResult.map(res => 
+						      			<tr key={res.ID} >
+						      			<td className="td-style">{res.ID}</td>
+						      			<td className="td-style">{res.created_date}</td>
+						      			<td className="td-style">Alarm_{res.alarm_device_id}</td>
+
+					      			</tr>)}
 					      		</tbody>
-				      		</table>
-			      		</div>
-			      	</div>
-		      	</div>
-	        </div>
-	      </div>
-
+				      		</table>			  
+				      	</div>
+				      	</div>
+		      		</div>
+	        	</div>
+	      	</div>
 	    );
-	
-  }
+	}
 }
 
 export default App;

@@ -20,21 +20,22 @@ app.use(bodyParser.json({ type: 'application/json' }));
 
 var router = express.Router();
 
-router.use(function(request, response, next) {
-    // do logging
-    console.log('Something is happening.');
-    next(); // make sure we go to the next routes and don't stop here
-});
 /*
+//This part is for logging and testing:
+
+router.use(function(request, response, next) {
+    console.log('Something is happening.');
+    next(); 
+});
+
 router.get('/', function(request, response) {
     response.json({ message: 'hooray! welcome to our api!' });   
 });
 */
+
 app.use('/api', router);
 
-
-
-app.use(function(request,response, next){ //request from react client site, all the way back to epress api
+app.use(function(request,response, next){ 
 	response.header("Access-control-Allow-Origin", "*");
 	response.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
 	response.header("Access-control-Allow-Headers", "Origin, X-Requested-With, Accept");
@@ -42,6 +43,10 @@ app.use(function(request,response, next){ //request from react client site, all 
 });
 
 
+//This part contains the queries of mysql
+
+
+//adding new alarm >> along with description being sent
 app.post('/api/add',function(request,response){
 
 	var ar = request.body;
@@ -59,17 +64,12 @@ app.post('/api/add',function(request,response){
     	}
     	else{
     		return response.status(200).send(({msg:description}));
-    		
     	}
-
 	});
-
-	
-	
 });
 			
 
-
+//listing all the current alarms from table (alarm_device)
 app.get('/api/list',function(request,response){
   	var sql = "SELECT * FROM alarm_device";
 		con.query(sql, function (err, result) {
@@ -78,12 +78,14 @@ app.get('/api/list',function(request,response){
     		return response.status(400).send(err);
     	}
     	else{
-    		return response.status(200).send(result);
+
+       		return response.status(200).send(result);
     	}
 	});
 });
 
 
+//sending an alarm from device 
 app.post('/api/alert',function(request,response){
 
 	var ar2 = request.body;
@@ -92,9 +94,10 @@ app.post('/api/alert',function(request,response){
 		first = JSON.parse(obj2);
 	var id = (first['id']);
 
-	var time = Math.floor(Date.now() / 1000);
+	//var time = Math.floor(Date.now() / 1000);
+	var datetime = new Date();
 
-	var sql = "INSERT INTO alarm_log (created_date, alarm_device_id) VALUES ('" + time + "' ,'" + id + "')";
+	var sql = "INSERT INTO alarm_log (created_date, alarm_device_id) VALUES ('" + datetime + "' ,'" + id + "')";
 		con.query(sql, function (err, result) {
 	    if (err) 
     	{
@@ -108,6 +111,8 @@ app.post('/api/alert',function(request,response){
 });
 	
 
+
+//report from table (alarm_log)
 app.get('/api/report',function(request,response){
 	
   	var sql = "SELECT * FROM alarm_log ORDER BY created_date DESC";
@@ -124,6 +129,27 @@ app.get('/api/report',function(request,response){
 
 
 
+//filtering by device id from table (alarm_log)
+app.post('/api/search',function(request,response){
+
+	var ar = request.body;
+	var first;
+	for (obj in ar)
+		first = JSON.parse(obj);
+	var id = (first['id']);
+	
+	var sql = "SELECT * FROM alarm_log WHERE alarm_device_id = ('" + id + "')";
+		con.query(sql, function (err, result) {
+	    if (err) 
+    	{
+    		return response.status(400).send(err);
+
+    	}
+    	else{
+    		return response.status(200).send(result);
+    	}
+	});
+});
 
 
 app.listen(port, () => console.log("listening to port "+port));
