@@ -13,12 +13,12 @@ var con = mysql.createConnection({
   max: 10
 });
 
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json({ type: 'application/json' }));
 
 var router = express.Router();
-
 
 router.use(function(request, response, next) {
     // do logging
@@ -33,19 +33,38 @@ router.get('/', function(request, response) {
 app.use('/api', router);
 
 
+
+app.use(function(request,response, next){ //request from react client site, all the way back to epress api
+	response.header("Access-control-Allow-Origin", "*");
+	response.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+	response.header("Access-control-Allow-Headers", "Origin, X-Requested-With, Accept");
+	next();
+});
+
+
 app.post('/api/add',function(request,response){
-	var description = request.body.description;
+
+	var ar = request.body;
+	var first;
+	for (obj in ar)
+		first = JSON.parse(obj);
+	var description = (first['description']);
+	
 	var sql = "INSERT INTO alarm_device (description) VALUES ('" + description + "')";
 		con.query(sql, function (err, result) {
 	    if (err) 
     	{
     		return response.status(400).send(err);
+
     	}
     	else{
-    		return response.status(200).send(result);
+    		return response.status(200).send(({msg:description}));
     		
     	}
+
 	});
+
+	
 	
 });
 			
@@ -65,6 +84,30 @@ app.get('/api/list',function(request,response){
 });
 
 
+app.post('/api/alert',function(request,response){
+
+	var ar2 = request.body;
+	var first;
+	for (obj2 in ar2)
+		first = JSON.parse(obj2);
+	var id = (first['id']);
+
+	var time = Math.floor(Date.now() / 1000);
+
+	var sql = "INSERT INTO alarm_log (created_date, alarm_device_id) VALUES ('" + time + "' ,'" + id + "')";
+		con.query(sql, function (err, result) {
+	    if (err) 
+    	{
+    		return response.status(400).send(err);
+    	}
+    	else{
+    		return response.status(200).send(({msg:id}));
+    	}
+	});
+	
+});
+	
+
 app.get('/api/report',function(request,response){
 	
   	var sql = "SELECT * FROM alarm_log ORDER BY created_date DESC";
@@ -79,12 +122,7 @@ app.get('/api/report',function(request,response){
 	});
 })
 
-app.use(function(request,response, next){ //request from react client site, all the way back to epress api
-	response.header("Access-control-Allow-Origin", "*");
-	response.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-	response.header("Access-control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-	next();
-});
+
 
 
 
